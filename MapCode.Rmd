@@ -1,0 +1,103 @@
+The Spatial Distribution of Risk Scores Around the World
+
+```{r}
+
+#import necessary libraries for this project
+
+library("sf")
+library("tmap")
+library("spdep")
+library("janitor")
+library("tidyverse")
+library("here")
+library("dplyr")
+library("sf")
+
+
+```
+
+Data Importing
+
+```{r}
+
+#import the overall risk score data 
+risk_scores <- read_sf(here::here("Data/output_shapefile.shp")) %>%
+  clean_names()
+
+
+```
+
+```{r}
+
+#import country boundary shp
+world <- read_sf(here::here("Data/world-administrative-boundaries.shp")) %>%
+  clean_names()
+
+```
+
+MAPS
+
+1.  Baseline 2020
+
+```{r}
+
+#creating map
+colors <- c('#fffecc','#ffd976', "#fdae61", '#d7191c')
+breaks <- c(0, 10, 20, 30, 40)
+map_baseline <- tm_shape(risk_scores) +
+  tm_fill("risk_base",
+          title = "Risk Score",
+          midpoint = 0,
+          palette = colors) +
+  tm_shape(world) +
+  tm_borders(col = "black", lwd=0.2)+
+  tm_compass(north = 0, position = c(0.06, 0.47), size = 1.75, show.labels = 0) +
+  tm_scale_bar(position = c(0.45, 0.021), text.size = 0.295, size = 0.3) +
+  tm_layout() 
+tmap_save(map_baseline, filename = "baseline_map.png", dpi = 300)
+
+```
+
+2.  SSP126
+
+```{r}
+
+#creating map
+colors <- c('#fffecc','#ffd976', "#fdae61", '#d7191c','#810e27')
+breaks <- c(0, 10, 20, 30, 40, Inf)
+map_ssp126 <- tm_shape(risk_scores) +
+  tm_fill("risk_126",
+          title = "Risk Score",
+          palette = colors,
+          breaks = breaks,  # Set custom breaks
+          midpoint = 0) +
+  tm_shape(world) +
+  tm_borders(col = "black", lwd = 0.2) +
+  tm_compass(north = 0, position = c(0.06, 0.47), size = 1.75, show.labels = 0) +
+  tm_scale_bar(position = c(0.45, 0.021), text.size = 0.295, size = 0.3) +
+  tm_layout()
+tmap_save(map_ssp126, filename = "ssp126_map.png", dpi = 300)
+
+```
+
+3.  SSP585
+
+```{r}
+
+#creating map
+colors <- c('#fffecc','#ffd976', "#fdae61", '#d7191c','#810e27')
+breaks <- c(0, 10, 20, 30, 40, Inf)
+map_ssp585 <- tm_shape(risk_scores) +
+  tm_fill("risk_585",
+          title = "Risk Score",
+          palette = colors,
+          midpoint = 0,
+         breaks = breaks) +
+  tm_shape(world) +
+  tm_borders(col = "black", lwd=0.2)+
+  tm_compass(north = 0, position = c(0.06, 0.47), size = 1.75, show.labels = 0) +
+  tm_scale_bar(position = c(0.45, 0.021), text.size = 0.295, size = 0.3) +
+  tm_layout() 
+tmap_save(map_ssp585, filename = "ssp585_map.png",dpi = 300)
+
+```
